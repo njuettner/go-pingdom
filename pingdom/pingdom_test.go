@@ -55,15 +55,10 @@ func TestNewClientWithConfig(t *testing.T) {
 }
 
 func TestNewClient(t *testing.T) {
-	c := NewClient("user", "password", "key")
+	c := NewClient("key")
 	assert.Equal(t, http.DefaultClient, c.client)
 	assert.Equal(t, defaultBaseURL, c.BaseURL.String())
 	assert.NotNil(t, c.Checks)
-}
-
-func TestNewMultiUserClient(t *testing.T) {
-	c := NewMultiUserClient("user", "password", "key", "account_email")
-	assert.NotEqual(t, "", c.AccountEmail, "NewMultiUserClient failed to set AccountEmail property")
 }
 
 func TestNewRequest(t *testing.T) {

@@ -72,7 +72,7 @@ func NewClientWithConfig(config ClientConfig) (*Client, error) {
 
 // NewClient returns a Pingdom client with a default base URL and default HTTP client.
 // Deprecated: Use NewClientWithConfig
-func NewClient(user string, password string, key string) *Client {
+func NewClient(key string) *Client {
 	config := ClientConfig{
 		APIKey: key,
 	}
