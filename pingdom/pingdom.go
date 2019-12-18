@@ -9,17 +9,14 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://api.pingdom.com/api/2.1"
+	defaultBaseURL = "https://api.pingdom.com/api/3.1"
 )
 
 // Client represents a client to the Pingdom API.  This package also
 // provides a NewClient function for convenience to initialize a client
 // with default parameters.
 type Client struct {
-	User         string
-	Password     string
 	APIKey       string
-	AccountEmail string
 	BaseURL      *url.URL
 	client       *http.Client
 	Checks       *CheckService
@@ -54,11 +51,8 @@ func NewClientWithConfig(config ClientConfig) (*Client, error) {
 	}
 
 	c := &Client{
-		User:         config.User,
-		Password:     config.Password,
-		APIKey:       config.APIKey,
-		AccountEmail: config.AccountEmail,
-		BaseURL:      baseURL,
+		APIKey:  config.APIKey,
+		BaseURL: baseURL,
 	}
 
 	if config.HTTPClient != nil {
@@ -80,22 +74,7 @@ func NewClientWithConfig(config ClientConfig) (*Client, error) {
 // Deprecated: Use NewClientWithConfig
 func NewClient(user string, password string, key string) *Client {
 	config := ClientConfig{
-		User:     user,
-		Password: password,
-		APIKey:   key,
-	}
-	c, _ := NewClientWithConfig(config)
-	return c
-}
-
-// NewMultiUserClient extends NewClient to allow Multi-User authentication.
-// Deprecated: Use NewClientWithConfig
-func NewMultiUserClient(user string, password string, key string, accountEmail string) *Client {
-	config := ClientConfig{
-		User:         user,
-		Password:     password,
-		APIKey:       key,
-		AccountEmail: accountEmail,
+		APIKey: key,
 	}
 	c, _ := NewClientWithConfig(config)
 	return c
@@ -122,11 +101,10 @@ func (pc *Client) NewRequest(method string, rsc string, params map[string]string
 	}
 
 	req, err := http.NewRequest(method, baseURL.String(), nil)
-	req.SetBasicAuth(pc.User, pc.Password)
-	req.Header.Add("App-Key", pc.APIKey)
-	if pc.AccountEmail != "" {
-		req.Header.Add("Account-Email", pc.AccountEmail)
+	if err != nil {
+		return nil, err
 	}
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", pc.APIKey))
 	return req, err
 }
 
